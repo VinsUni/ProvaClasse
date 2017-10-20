@@ -61,13 +61,7 @@ $Id: AlignmentService.java 1841 2013-03-24 17:28:33Z euzenat $
 public class AlignmentService {
     final static Logger logger = LoggerFactory.getLogger( AlignmentService.class );
 
-    public String //DBMS Parameters
-	DBHOST = "localhost",
-	DBPORT = "3306",
-	DBUSER = "adminAServ",
-	DBPASS = "aaa345",
-	DBBASE = "AServDB",
-	DBMS   = "mysql";
+    public static DBMSParameters dbmsparameters = new DBMSParameters();
 
     public static final String //Port Strings
 	HTML = "8089",
@@ -110,18 +104,18 @@ public class AlignmentService {
 		public void run() { close(); } });
 
 	// Connect database
-	if( DBMS.equals("postgres") ) {
+	if( dbmsparameters.getDBMS().equals("postgres") ) {
 	    logger.debug("postgres driver");
-	    DBPORT = "5432";
-	    connection = new DBServiceImpl( "org.postgresql.Driver" ,  "jdbc:postgresql", DBPORT );
+	    dbmsparameters.setDBPORT("5432");
+	    connection = new DBServiceImpl( "org.postgresql.Driver" ,  "jdbc:postgresql", dbmsparameters.getDBPORT() );
 	} else {
 	    logger.debug("mysql driver");
-	    DBPORT = "3306";
-	    connection = new DBServiceImpl( "com.mysql.jdbc.Driver" ,  "jdbc:mysql", DBPORT );
+	    dbmsparameters.setDBPORT("3306"); 
+	    connection = new DBServiceImpl( "com.mysql.jdbc.Driver" ,  "jdbc:mysql", dbmsparameters.getDBPORT() );
 	}
 	
 	connection.init();
-	connection.connect( DBHOST, DBPORT, DBUSER, DBPASS, DBBASE );
+	connection.connect( dbmsparameters.getDBHOST(), dbmsparameters.getDBPORT(), dbmsparameters.getDBUSER(), dbmsparameters.getDBPASS(), dbmsparameters.getDBBASE() );
 	logger.debug("Database connected");
 
 	// Create a AServProtocolManager
@@ -355,28 +349,28 @@ public class AlignmentService {
 		}
 		break;
 	    case 'm' :
-		DBHOST = g.getOptarg();
+	    dbmsparameters.setDBHOST(g.getOptarg());
 		break;
 	    case 's' :
-		DBPORT = g.getOptarg();
+	   	dbmsparameters.setDBPORT(g.getOptarg());
 		break;
 	    case 'u' :
-		DBUSER = g.getOptarg();
+	    	dbmsparameters.setDBUSER(g.getOptarg());
 		break;
 	    case 'p' :
-		DBPASS = g.getOptarg();
+	    	dbmsparameters.setDBPASS(g.getOptarg());
 		break;
 	    case 'b' :
-		DBBASE = g.getOptarg();
+	    	dbmsparameters.setDBBASE(g.getOptarg());
 		break;
 	    case 'B' :
 		arg   = g.getOptarg();
 		if ( arg != null ) {
 		    params.setProperty( "DBMS", arg );
-		    DBMS = arg;
+		    dbmsparameters.setDBMS(arg);
 		} else {
 		    params.setProperty( "DBMS", "mysql" );
-		    DBMS = "mysql";
+		    dbmsparameters.setDBMS("mysql");
 		}
 		break;
 	    case 'D' :
